@@ -36,6 +36,50 @@
         }
       }
     },
+    "/api/Auth/CheckingAuthorization": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Auth/Logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/LoginWithGoogle": {
       "post": {
         "tags": [
@@ -71,9 +115,29 @@
       }
     },
     "/api/Product/GetAllProduct": {
-      "get": {
+      "post": {
         "tags": [
           "Product"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -82,7 +146,7 @@
         }
       }
     },
-    "/api/Product/GetByIdProduct": {
+    "/api/Product/GetByIdProduct/{id}": {
       "get": {
         "tags": [
           "Product"
@@ -90,10 +154,10 @@
         "parameters": [
           {
             "name": "id",
-            "in": "query",
+            "in": "path",
+            "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -212,6 +276,28 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Product/SearchingInProducts/{text}": {
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "parameters": [
+          {
+            "name": "text",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -378,6 +464,18 @@
           }
         }
       }
+    },
+    "/api/User/GettingUserActiveInfo": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -385,8 +483,7 @@
       "LoginDto": {
         "required": [
           "email",
-          "password",
-          "role"
+          "password"
         ],
         "type": "object",
         "properties": {

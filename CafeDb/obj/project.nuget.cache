@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "iaAeq5RtnzY=",
+  "dgSpecHash": "ND3AaB7leZA=",
   "success": true,
-  "projectFilePath": "E:\\API's\\CafeDb\\CafeDb\\CafeDb\\CafeDb.csproj",
+  "projectFilePath": "E:\\APIs\\CafeDb\\CafeDb\\CafeDb\\CafeDb.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\RenderKar\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\RenderKar\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

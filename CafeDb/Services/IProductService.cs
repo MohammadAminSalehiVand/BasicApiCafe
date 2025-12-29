@@ -4,6 +4,7 @@ using CafeDb.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -14,9 +15,11 @@ namespace CafeDb.Services
         Task<ProductAdminDto?> CreateProduct(ProductDto product);
         Task<ProductUpdateDto?> ProductUpdate(ProductUpdateDto product);
         Task<bool> DeleteProduct(Guid id);
-        Task<object?> GetProduct(Guid id);
-        IEnumerable<ProductAdminDto> GetAllProduct();
+        Task<object?> GetProduct(string id);
+        IEnumerable<ProductAdminDto> GetAllProduct(int page , int pageSize );
         Task<BillDto>? BuyProduct(ProductUserBuyDto product);
+        Task<IEnumerable<ProductDto>?> SearchingInProducts(string searchText);
+        //Task<bool> AddingToCart(string id);
     }
     public class ProductService(IHttpContextAccessor httpContextAccessor, AppDbContext _dbContext) : IProductService
     {
@@ -109,9 +112,9 @@ namespace CafeDb.Services
             return true;
         }
 
-        public IEnumerable<ProductAdminDto> GetAllProduct()
+        public IEnumerable<ProductAdminDto> GetAllProduct(int page , int pageSize)
         {
-            IEnumerable<ProductAdminDto> entityList =  dbContext.Products.Select(p => new ProductAdminDto
+            IEnumerable<ProductAdminDto> entityList =  dbContext.Products.Skip((page -1) * pageSize).Take(pageSize).Select(p => new ProductAdminDto
             {
                 Id = p.Id ,
                 ProductName = p.ProductName ,
@@ -124,9 +127,18 @@ namespace CafeDb.Services
             return entityList;
         }
 
-        public async Task<Object?> GetProduct(Guid id)
+        public async Task<Object?> GetProduct(string id)
         {
-            ProductEntity? entity = await dbContext.Products.FindAsync(id);
+            Guid realId;
+            try
+            {
+                realId = Guid.Parse(id);
+            }
+            catch
+            {
+                return null;
+            }
+            ProductEntity? entity = await dbContext.Products.FindAsync(realId);
             if (entity == null)
             {
                 return null;
@@ -141,7 +153,7 @@ namespace CafeDb.Services
                     ProductInventory = entity.ProductInventory,
                     ProductName = entity.ProductName,
                     Description = entity.Description,
-                    Id = id,
+                    Id = realId,
                     AddDate = entity.AddDate
                 };
             return new ProductDto
@@ -151,7 +163,7 @@ namespace CafeDb.Services
                 ProductInventory = entity.ProductInventory,
                 ProductName = entity.ProductName,
                 Description = entity.Description,
-                Id = id,
+                Id = realId,
             };
         }
 
@@ -172,5 +184,37 @@ namespace CafeDb.Services
             product.UpdateDescription = "Update has done";
             return product;
         }
+
+        public async Task<IEnumerable<ProductDto>?> SearchingInProducts(string searchText)
+        {
+            IEnumerable<ProductDto>? products = await dbContext.Products
+                .Where(p => p.ProductName.ToLower().Contains(searchText.Trim().ToLower()) || (p.Description != null && p.Description.ToLower().Contains(searchText.Trim().ToLower())))
+                .Select(p => new ProductDto
+                {
+                    Id = p.Id,
+                    ProductName = p.ProductName,
+                    Description = p.Description,
+                    ProductInventory = p.ProductInventory,
+                    Price = p.Price,
+                    OffPricePercent = p.OffPricePercent
+                })
+                .ToListAsync();
+            if (products != null && products.Count() != 0)
+                return products;
+            else return null;
+        }
+
+        //public async Task<bool> AddingToCart(string id)
+        //{
+        //    Guid realId;
+        //    try { realId = Guid.Parse(id); }
+        //    catch { return false; }
+        //    if (dbContext.Products.FirstOrDefaultAsync(x => x.Id == realId ) != null)
+        //    {
+        //        UserEntity = await dbContext.Products.FirstOrDefaultAsync( x => x.Id == realId );
+        //        //await dbContext.Users.Update()
+        //    }
+        //    else return false;
+        //}
     }
 }

@@ -1,6 +1,26 @@
 [
   {
     "ContainingType": "CafeDb.Controllers.AuthController",
+    "Method": "CheckingAuthorization",
+    "RelativePath": "api/Auth/CheckingAuthorization",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Byte",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "CafeDb.Controllers.AuthController",
     "Method": "ExternalCallback",
     "RelativePath": "api/Auth/ExternalCallback",
     "HttpMethod": "GET",
@@ -39,6 +59,16 @@
         "IsRequired": false
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CafeDb.Controllers.AuthController",
+    "Method": "Logout",
+    "RelativePath": "api/Auth/Logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -93,24 +123,51 @@
     "ContainingType": "CafeDb.Controllers.ProductController",
     "Method": "GettAll",
     "RelativePath": "api/Product/GetAllProduct",
-    "HttpMethod": "GET",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": []
   },
   {
     "ContainingType": "CafeDb.Controllers.ProductController",
     "Method": "GetById",
-    "RelativePath": "api/Product/GetByIdProduct",
+    "RelativePath": "api/Product/GetByIdProduct/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Guid",
-        "IsRequired": false
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CafeDb.Controllers.ProductController",
+    "Method": "SearchingInProducts",
+    "RelativePath": "api/Product/SearchingInProducts/{text}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "text",
+        "Type": "System.String",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -188,6 +245,16 @@
     "ContainingType": "CafeDb.Controllers.UserController",
     "Method": "GetBills",
     "RelativePath": "api/User/GetBills",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CafeDb.Controllers.UserController",
+    "Method": "GettingUserActiveInfo",
+    "RelativePath": "api/User/GettingUserActiveInfo",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,

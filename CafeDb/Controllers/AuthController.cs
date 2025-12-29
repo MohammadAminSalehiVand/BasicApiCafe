@@ -4,12 +4,11 @@ using CafeDb.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using CafeDb.Models;
 using CafeDb.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CafeDb.Controllers
 {
@@ -43,10 +42,45 @@ namespace CafeDb.Controllers
             var minutes = int.Parse(_config["Jwt:ExpireMinutes"] ?? "60");
             var (token, expires) = JwtTokenGenerator.CreateToken(key, issuer, TimeSpan.FromMinutes(minutes), claims);
 
+            Response.Cookies.Append("auth_token", token, new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = expires
+            });
+
+
             var response = new LoginResponseDto { Token = token, Expires = expires };
             user.UnusedUserTime = DateTime.UtcNow;
             await _db.SaveChangesAsync();
             return Ok(response);
+        }
+        [HttpGet("CheckingAuthorization")]
+        [Authorize]
+        public byte CheckingAuthorization()
+        {
+            string? role;
+            try
+            {
+                role = User.FindFirst(ClaimTypes.Role)?.Value;
+            }
+            catch
+            {
+                role = null;
+            }
+            if(role == null) return 0;
+            if(role == "Admin") return 1;
+            if(role == "Writer") return 2;
+            if(role == "Reader") return 3;
+            return 4;
+        }
+        [HttpPost("Logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+                Response.Cookies.Delete("auth_token");
+
+                return Ok(new { message = "Logged out successfully" });
         }
         [HttpPost("LoginWithGoogle")]
         public IActionResult LoginGoogle(string? returnUrl = "/")

@@ -9,7 +9,7 @@ namespace CafeDb.Dtos
         public required string Email { get; set; }
         [PasswordPropertyText]
         public required string Password { get; set; }
-        public required string Role { get; set; }
+        public string? Role {get; set;}
     }
 
     public class LoginResponseDto

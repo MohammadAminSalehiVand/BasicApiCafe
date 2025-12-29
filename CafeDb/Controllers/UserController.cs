@@ -65,5 +65,13 @@ namespace CafeDb.Controllers
             if (result == null) return NotFound();
             return Ok(result);
         }
+        [HttpGet("GettingUserActiveInfo")]
+        [Authorize]
+        public async Task<IActionResult> GettingUserActiveInfo()
+        {
+            var resualt = await _service.GettingActiveUserInfo();
+            if (resualt.FullName == "Not Found") return Unauthorized();
+            return Ok(resualt);
+        }
     }
 }

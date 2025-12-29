@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CafeDb.Dtos;
+using Microsoft.OpenApi.Any;
+using System.ComponentModel.DataAnnotations;
 
 namespace CafeDb.Models
 {
@@ -23,6 +25,7 @@ namespace CafeDb.Models
         public bool? IsMarried { get; set; }
         public DateTime CreatedUserTime { get; private set; } = DateTime.UtcNow;
         public DateTime UnusedUserTime { get; set; } = DateTime.UtcNow;
+        public List<ProductUserBuyDto>? CartProductList { get; set; }
         public ICollection<BillEntity>? Bills { get; set; }
         public string? GoogleId { get; set; }
         public GoogleUserEntity? GoogleUser { get; set; }

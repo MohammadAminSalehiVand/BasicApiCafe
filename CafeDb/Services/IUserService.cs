@@ -18,6 +18,7 @@ namespace CafeDb.Services
         Task<UserResponseAdminSide?> ChangingRole(string role, Guid id);
         Task<List<BillUserDto>?> GetAllBills();
         Task<GoogleUserDto> MergingWithGoogle(string GoogleId, string email, string? name);
+        Task<UserResponse> GettingActiveUserInfo();
     }
     public class UserService(IHttpContextAccessor httpContextAccessor, AppDbContext _dbContext) : IUserService
     {
@@ -221,6 +222,37 @@ namespace CafeDb.Services
                     Name = string.Empty,
                     Caption = "Aithorization Done"
                 };
+        }
+
+        public async Task<UserResponse> GettingActiveUserInfo()
+        {
+            ClaimsPrincipal? user = httpContextAccessor.HttpContext?.User;
+            string? subClaim = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if(string.IsNullOrEmpty(subClaim) || !Guid.TryParse(subClaim, out Guid userId))
+            {
+                return new UserResponse
+                {
+                    Email = "Not Found",
+                    EntityRole = "Not Found",
+                    FullName = "Not Found",
+                    PhoneNumber = "Not Found"
+                };
+            }
+            UserEntity? actualUser = await dbContext.Users.FindAsync(userId);
+            if(actualUser == null) return new UserResponse
+            {
+                Email = "Not Found",
+                EntityRole = "Not Found",
+                FullName = "Not Found",
+                PhoneNumber = "Not Found"
+            };
+            return new UserResponse
+            {
+                Email = actualUser.Email,
+                EntityRole = actualUser.EntityRole,
+                FullName = actualUser.FullName,
+                PhoneNumber = actualUser.PhoneNumber,
+            };
         }
     }
 }

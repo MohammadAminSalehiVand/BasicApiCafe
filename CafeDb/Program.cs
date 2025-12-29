@@ -18,6 +18,15 @@ namespace CafeDb
             builder.Services.AddAuthorization();
             builder.Services.AddControllers();
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowNextJs",
+                    policy => policy.WithOrigins("http://localhost:3000")
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()
+                                    .AllowCredentials());
+            });
+
 
             builder.Services.AddDbContextPool<AppDbContext>(o =>
             o.UseSqlServer(builder.Configuration.GetConnectionString(name: "DefualtDataBase"))
@@ -51,6 +60,18 @@ namespace CafeDb
                         ClockSkew = TimeSpan.FromSeconds(30),
 
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            if (context.Request.Cookies.ContainsKey("auth_token"))
+                            {
+                                context.Token = context.Request.Cookies["auth_token"];
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
+
                 });
 
             builder.Services.AddSwaggerGen(options =>
@@ -87,11 +108,11 @@ namespace CafeDb
 
             var app = builder.Build();
 
-
+            app.UseCors("AllowNextJs");
 
             // Acrivating Authorization
             app.UseRouting();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

@@ -60,4 +60,9 @@ namespace CafeDb.Dtos
         public Guid Id { get; set; }
         public required DateTime UnusedUserTime { get; set; }
     }
+    public class UserCartListDto
+    {
+        public Guid id { get; set; }
+        public List<ProductUserBuyDto>? CartProductList { get; set; }
+    }
 }

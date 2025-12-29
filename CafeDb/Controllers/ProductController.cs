@@ -2,8 +2,6 @@
 using CafeDb.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
 namespace CafeDb.Controllers
 {
     [ApiController]
@@ -11,17 +9,16 @@ namespace CafeDb.Controllers
     public class ProductController(IProductService productService) : ControllerBase
     {
         private readonly IProductService _service = productService;
-        [HttpGet("GetAllProduct")]
-        //[Authorize(Roles = "Admin")]
-        public IActionResult GettAll()
+        [HttpPost("GetAllProduct")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GettAll(int page = 1 , int pageSize = 10)
         {
-            var result = _service.GetAllProduct();
+            var result = _service.GetAllProduct(page,pageSize);
             return Ok(result);
         }
 
-        [HttpGet("GetByIdProduct")]
-        [Authorize(Roles ="Admin")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("GetByIdProduct/{id}")]
+        public async Task<IActionResult> GetById(string id)
         {
             var result = await _service.GetProduct(id);
             if (result == null) return NotFound();
@@ -59,6 +56,22 @@ namespace CafeDb.Controllers
         {
             var result = await _service.BuyProduct(param)!;
             if (result == null) return NotFound();
+            return Ok(result);
+        }
+
+        [HttpGet("SearchingInProducts/{text}")]
+        public async Task<IActionResult> SearchingInProducts(string text)
+        {
+            var result = await _service.SearchingInProducts(text);
+            if (result == null) return Ok(new ProductDto
+            {
+                Id =  Guid.Empty,
+                ProductName = String.Empty,
+                Description = "Not Found",
+                ProductInventory = 0,
+                Price = 0,
+                OffPricePercent = 0
+            });
             return Ok(result);
         }
     }
